@@ -23,6 +23,7 @@ public class Transport implements Serializable {
     private String description;
     private Long originWarehouseId;
     private Long destinationWarehouseId;
+    private Long vehicleId;
     private String status;
     private Date createdAt;
     private Date updatedAt;

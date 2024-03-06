@@ -15,16 +15,15 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("items")
-public class Item implements Serializable {
+@TableName("vehicle")
+public class Vehicle implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
-    private Long itemId;
-    private Long warehouseId;
-    private Long productId;
-    private String productName;
-    private Double quantity;
-    private Date lastUpdated;
+    private Long vehicleId;
+    private String licensePlate;
+    private String type;
+    private Integer capacity;
+    private String status;
 }
 
 
