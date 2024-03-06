@@ -32,55 +32,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return save(user);
     }
 
-    public boolean del(Serializable id, String cookie) {
-        String pattern = "%22accessToken%22:%22(.+)%22";
-        Pattern compiledPattern = Pattern.compile(pattern);
-        Matcher matcher = compiledPattern.matcher(cookie);
-        if (matcher.find()) {
-            String token = matcher.group(1);
-            //  验证token是否过期             验证权限为管理员
-            if (!JwtHelper.verify(token)
-                    && (Integer) JwtHelper.decode(token, "payload").asMap().get("role") == 0) {
-                return removeById(id);
-            }
-        }
-        return false;
-    }
-
-    public boolean updateUser(User user, String cookie) {
-        String pattern = "%22accessToken%22:%22(.+)%22";
-        Pattern compiledPattern = Pattern.compile(pattern);
-        Matcher matcher = compiledPattern.matcher(cookie);
-        if (matcher.find()) {
-            String token = matcher.group(1);
-            if (!JwtHelper.verify(token)) {
-//                user.setUpdateTime(new Date());
-                return updateById(user);
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public List<User> teacherList() {
-        QueryWrapper<User> qw = new QueryWrapper<User>()
-                .select("username")
-                .eq("role", 1)
-                .eq("is_active", 1)
-                .notInSql("username", "select username from teachers where username is not null");
-        return list(qw);
-    }
-
-    @Override
-    public List<User> studentList() {
-        QueryWrapper<User> qw = new QueryWrapper<User>()
-                .select("username")
-                .eq("role", 2)
-                .eq("is_active", 1)
-                .notInSql("username", "select username from students where username is not null");
-        return list(qw);
-    }
-
     @Override
     public boolean roles(TokenData tokenData) {
         String accessToken = tokenData.getAccessToken();

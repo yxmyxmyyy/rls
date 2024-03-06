@@ -26,14 +26,14 @@ public class UserController {
 
     // 删除用户
     @DeleteMapping("/delete/{id}")
-    public boolean del(@PathVariable Serializable id, @RequestHeader("Cookie") String cookie) {
-        return userService.del(id, cookie);
+    public boolean del(@PathVariable Serializable id) {
+        return userService.removeById(id);
     }
 
     // 修改用户
     @PutMapping("/update")
-    public boolean updatePassWd(@RequestBody User user, @RequestHeader("Cookie") String cookie) {
-        return userService.updateUser(user, cookie);
+    public boolean updatePassWd(@RequestBody User user) {
+        return userService.updateById(user);
     }
 
     // 分页查询
