@@ -1,4 +1,4 @@
-package com.vehicle.mapper;
+package com.transport.mapper;
 
 import com.api.domain.po.VehicleLoad;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

@@ -23,7 +23,7 @@ public class Item implements Serializable {
     private Long warehouseId;
     private Long productId;
     private String productName;
-    private Double quantity;
+    private Double weight;
     private Date lastUpdated;
 }
 

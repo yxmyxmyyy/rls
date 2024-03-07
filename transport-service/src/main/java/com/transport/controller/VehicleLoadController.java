@@ -1,14 +1,15 @@
-package com.vehicle.controller;
+package com.transport.controller;
 
 import com.api.domain.po.Vehicle;
 import com.api.domain.po.VehicleLoad;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.vehicle.service.IVehicleLoadService;
+import com.transport.service.IVehicleLoadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -20,8 +21,8 @@ public class VehicleLoadController {
 
     // 新增
     @PostMapping("/insert")
-    public boolean insert(@RequestBody VehicleLoad vehicleload) {
-        return VehicleLoadService.saveOrUpdate(vehicleload);
+    public boolean insert(@RequestBody List<VehicleLoad> vehicleload) {
+        return VehicleLoadService.saveOrUpdateBatch(vehicleload);
     }
 
     // 删除

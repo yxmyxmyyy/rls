@@ -21,6 +21,7 @@ public class User implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long userId;
+    private Long warehouseId;
     private String username;
     private String password;
     private Integer role;

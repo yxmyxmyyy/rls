@@ -20,9 +20,10 @@ public class VehicleLoad implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long loadId;
     private Long vehicleId;
+    private Long taskId;
     private Long productId;
     private String productName;
-    private Double quantity;
+    private Double weight;
 }
 
 

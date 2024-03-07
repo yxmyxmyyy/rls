@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -20,8 +21,8 @@ public class ItemController {
 
     // 新增
     @PostMapping("/insert")
-    public boolean insert(@RequestBody Item item) {
-        return itemService.saveOrUpdate(item);
+    public boolean insert(@RequestBody List<Item> item) {
+        return itemService.saveOrUpdateBatch(item);
     }
 
     // 删除
