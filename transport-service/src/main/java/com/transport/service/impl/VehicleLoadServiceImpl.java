@@ -36,6 +36,11 @@ public class VehicleLoadServiceImpl extends ServiceImpl<VehicleLoadMapper, Vehic
             Iterator<VehicleLoad> iterator = cargo.iterator();
             while (iterator.hasNext()) {
                 VehicleLoad load = iterator.next();
+                // 检查是否应继续使用当前车辆或转到下一辆车
+                if (totalCargoWeight <= availableCapacity - 400) {
+                    break; // 转到下一辆车
+                }
+
                 if (load.getWeight() <= availableCapacity) {
                     // 货物可以完全装入卡车
                     loadsForThisVehicle.add(new VehicleLoad(null, vehicle.getVehicleId(), null, load.getProductId(), load.getProductName(), load.getWeight()));
@@ -44,10 +49,12 @@ public class VehicleLoadServiceImpl extends ServiceImpl<VehicleLoadMapper, Vehic
                     iterator.remove();
                 } else {
                     // 货物需要分割
-                    loadsForThisVehicle.add(new VehicleLoad(null, vehicle.getVehicleId(), null, load.getProductId(), load.getProductName(), availableCapacity));
-                    load.setWeight(load.getWeight() - availableCapacity);
-                    totalCargoWeight -= availableCapacity;
-                    break; // 当前卡车已满载
+                    if (availableCapacity > 400) { // 确保车辆至少还有400kg以上的容量，才考虑分割装载
+                        loadsForThisVehicle.add(new VehicleLoad(null, vehicle.getVehicleId(), null, load.getProductId(), load.getProductName(), availableCapacity));
+                        load.setWeight(load.getWeight() - availableCapacity);
+                        totalCargoWeight -= availableCapacity;
+                    }
+                    break; // 当前卡车已满载或保留至少400kg空间
                 }
             }
 
@@ -60,5 +67,12 @@ public class VehicleLoadServiceImpl extends ServiceImpl<VehicleLoadMapper, Vehic
 
         return new AllocationResultDTO(allocatedLoads, usedVehicles);
     }
+
+
+
+
+
+
+
 
 }

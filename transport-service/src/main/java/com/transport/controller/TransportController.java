@@ -42,8 +42,6 @@ public class TransportController {
         ts.setDestinationWarehouseId(transportVO.getDestinationWarehouseId());
         ts.setStatus("进行中");
         TransportService.save(ts);
-        System.out.println(vehicleClient.findAll());
-        System.out.println(transportVO.getVehicleLoad());
         AllocationResultDTO allocationResult = VehicleLoadService.allocateCargo(vehicleClient.findAll(), transportVO.getVehicleLoad());
         allocationResult.getVehicleLoads().forEach(vehicleLoad -> {
             vehicleLoad.setTaskId(ts.getTaskId()); // 更新taskId
