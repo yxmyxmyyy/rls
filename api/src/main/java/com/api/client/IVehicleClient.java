@@ -17,4 +17,6 @@ public interface IVehicleClient {
     @PutMapping("/Vehicle/update")
     boolean update(@RequestBody List<Vehicle> vehicle);
 
+
+
 }

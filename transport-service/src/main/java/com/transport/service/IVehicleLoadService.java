@@ -12,4 +12,6 @@ public interface IVehicleLoadService extends IService<VehicleLoad> {
 
     AllocationResultDTO allocateCargo(List<Vehicle> vehicles, List<VehicleLoad> cargo);
 
+    List<VehicleLoad> getByTaskId(Long taskId);
+
 }

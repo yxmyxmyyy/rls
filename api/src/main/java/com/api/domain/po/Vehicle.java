@@ -22,7 +22,7 @@ public class Vehicle implements Serializable {
     private Long vehicleId;
     private String licensePlate;
     private String type;
-    private Integer capacity;
+    private Double capacity;
     private String status;
 }
 

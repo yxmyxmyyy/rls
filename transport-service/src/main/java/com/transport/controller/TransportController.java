@@ -4,16 +4,20 @@ package com.transport.controller;
 import com.api.client.IVehicleClient;
 import com.api.domain.dto.AllocationResultDTO;
 import com.api.domain.po.Transport;
-import com.api.domain.po.VehicleLoad;
 import com.api.domain.vo.TransportVO;
+import com.api.domain.vo.VehicleTypeVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.common.domain.R;
+import com.common.exception.BadRequestException;
+import com.common.exception.CommonException;
 import com.transport.service.ITransportService;
 import com.transport.service.IVehicleLoadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -23,36 +27,36 @@ public class TransportController {
 
     private final ITransportService TransportService;
 
-    private final IVehicleLoadService VehicleLoadService;
-
-    private final IVehicleClient vehicleClient;
-
-    // 新增
-    @PostMapping("/insert")
-    public boolean insert(@RequestBody Transport transport) {
-        return TransportService.saveOrUpdate(transport);
-    }
-
     //新增订单
     @PostMapping("/new")
-    public boolean insert1(@RequestBody TransportVO transportVO){
-        Transport ts = new Transport();
-        ts.setDescription(transportVO.getDescription());
-        ts.setOriginWarehouseId(transportVO.getOriginWarehouseId());
-        ts.setDestinationWarehouseId(transportVO.getDestinationWarehouseId());
-        ts.setStatus("进行中");
-        TransportService.save(ts);
-        AllocationResultDTO allocationResult = VehicleLoadService.allocateCargo(vehicleClient.findAll(), transportVO.getVehicleLoad());
-        allocationResult.getVehicleLoads().forEach(vehicleLoad -> {
-            vehicleLoad.setTaskId(ts.getTaskId()); // 更新taskId
-        });
-        boolean vehicleLoadsSaved = VehicleLoadService.saveBatch(allocationResult.getVehicleLoads());
-        // 更新使用的车辆的状态，并保存
-        allocationResult.getVehicles().forEach(vehicle -> {
-            vehicle.setStatus("在途");
-        });
-        vehicleClient.update(allocationResult.getVehicles());
-        return vehicleLoadsSaved;
+    public R<List<VehicleTypeVO>> insert1(@RequestBody TransportVO transportVO) {
+        try {
+            List<VehicleTypeVO> result = TransportService.processNewTransport(transportVO);
+            // 如果处理成功，返回200状态码，消息"OK"，以及处理结果
+            return R.ok(result);
+        } catch (BadRequestException e) {
+            // 如果在处理中抛出了BadRequestException异常，使用异常中的状态码和消息构造错误响应
+            return R.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            // 对于其他类型的异常，返回500状态码和"服务器内部错误"消息
+            // 注意：实际生产中，可能需要更精细的异常处理策略
+            return R.error(500, "服务器内部错误");
+        }
+    }
+
+    //结算订单
+    @GetMapping("/end/{id}")
+    public R<Void> end(@PathVariable Long id) {
+        try {
+            boolean result = TransportService.endTransport(id);
+            if (result) {
+                return R.ok();
+            } else {
+                return R.error(500, "服务器内部错误");
+            }
+        } catch (CommonException e) {
+            return R.error(e);
+        }
     }
     // 删除
     @DeleteMapping("/delete/{id}")
@@ -72,5 +76,4 @@ public class TransportController {
         IPage<Transport> ip = new Page<>(pageNum, pageSize);
         return TransportService.page(ip);
     }
-    
 }
