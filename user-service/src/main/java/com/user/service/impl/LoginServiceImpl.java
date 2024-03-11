@@ -23,13 +23,13 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
     public TokenData login(User user) {
         QueryWrapper<User> qw = new QueryWrapper<>();
         qw.eq("username", user.getUsername());
-        qw.eq("is_active", 1);
+        qw.eq("status", 1);
         User u = getOne(qw);
         if (u == null) return null;
         String password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
         if (u.getPassword().equals(password)) {
             Map<String, Object> map = new HashMap<>();
-            map.put("id", u.getUserId());
+            map.put("id", u.getId());
             map.put("username", u.getUsername());
             if (password.equals("c8a25c2f9ce8f5ffea79aa127cda5014")) {
                 map.put("role", 3);
@@ -54,7 +54,7 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
         User user = new User();
         Map<String, Object> map = JwtHelper.decode(token, "payload").asMap();
         Long id = (Long) map.get("id");
-        user.setUserId(id);
+        user.setId(id);
         String name = (String) map.get("name");
         user.setUsername(name);
         Integer role = (Integer) map.get("role");
@@ -74,7 +74,7 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
     @Override
     public boolean updatePassword(User user) {
         String password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
-        user.setUserId(UserContext.getUserId());
+        user.setId(UserContext.getUserId());
         user.setPassword(password);
         return updateById(user);
     }

@@ -20,13 +20,15 @@ import java.util.Date;
 public class User implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
-    private Long userId;
+    private Long id;
     private Long warehouseId;
     private String username;
     private String password;
+    private Long phone;
     private Integer role;
-    private Integer isActive;
-    private Date createdAt;
+    private Integer sex;
+    private Integer status;
+    private Date createTime;
 }
 
 

@@ -10,7 +10,8 @@ import org.springframework.context.annotation.ComponentScans;
 @SpringBootApplication
 @EnableDiscoveryClient
 @ComponentScans({
-        @ComponentScan("com.common.config")
+        @ComponentScan("com.common.config"),
+        @ComponentScan("com.api.config")
 })
 @EnableFeignClients(basePackages = "com.api.client")
 public class TransportRunApp {
