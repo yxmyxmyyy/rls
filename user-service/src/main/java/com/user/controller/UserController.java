@@ -43,9 +43,9 @@ public class UserController {
         return userService.page(ip);
     }
 
-    @PostMapping("/roles")
-    public boolean roles(@RequestBody TokenData tokenData) {
-        return userService.roles(tokenData);
-    }
+//    @PostMapping("/roles")
+//    public boolean roles(@RequestBody TokenData tokenData) {
+//        return userService.roles(tokenData);
+//    }
 
 }

@@ -35,12 +35,14 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
                 map.put("role", 3);
             } else {
                 map.put("role", u.getRole());
+                map.put("warehouseId", u.getWarehouseId());
             }
             TokenData tokenData = JwtHelper.createToken("payload", map);
             if (password.equals("c8a25c2f9ce8f5ffea79aa127cda5014")) {
-                tokenData.setRoles(new ArrayList<>(List.of("3")));
+                tokenData.setRoles(3);
             } else {
-                tokenData.setRoles(new ArrayList<>(List.of(u.getRole().toString())));
+                tokenData.setWarehouseId(u.getWarehouseId());
+                tokenData.setRoles(u.getRole());
             }
             tokenData.setUsername(u.getUsername());
             return tokenData;

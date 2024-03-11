@@ -1,4 +1,4 @@
-package com.api.domain.po;
+package com.api.domain.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -11,15 +11,14 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("warehouses")
-public class Warehouse implements Serializable {
-    @JsonSerialize(using = ToStringSerializer.class)
-    @TableId(type = IdType.AUTO)
+public class WarehouseVO implements Serializable {
     private Integer id;
+    private List<WarehouseVO> children;
     private String name;
     private Integer parentId;
     private Integer type;

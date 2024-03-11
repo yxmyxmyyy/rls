@@ -1,4 +1,4 @@
-package com.item.mapper;
+package com.user.mapper;
 
 import com.api.domain.po.Item;
 import com.api.domain.po.Warehouse;

@@ -12,7 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class TokenData {
     private String username;
-    private List<String> roles;
+    private Integer roles;
+    private Long warehouseId;
     private String accessToken;
     private String refreshToken;
     private Date expires;

@@ -32,13 +32,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return save(user);
     }
 
-    @Override
-    public boolean roles(TokenData tokenData) {
-        String accessToken = tokenData.getAccessToken();
-        List<String> roles = tokenData.getRoles();
-        Map<String, Object> map = JwtHelper.decode(accessToken, "payload").asMap();
-        Integer role = (Integer) map.get("role");
-        return role.toString().equals(roles.get(0));
-    }
+//    @Override
+//    public boolean roles(TokenData tokenData) {
+//        String accessToken = tokenData.getAccessToken();
+//        Integer roles = tokenData.getRoles();
+//        Map<String, Object> map = JwtHelper.decode(accessToken, "payload").asMap();
+//        Integer role = (Integer) map.get("role");
+//        return role.toString().equals(roles.get(0));
+//    }
 }
 

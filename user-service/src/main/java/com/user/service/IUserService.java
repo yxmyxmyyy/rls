@@ -11,5 +11,5 @@ import java.util.List;
 public interface IUserService extends IService<User> {
     boolean insert(User user);
 
-    boolean roles(TokenData tokenData);
+//    boolean roles(TokenData tokenData);
 }

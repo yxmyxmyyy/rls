@@ -31,7 +31,7 @@ public class JwtHelper {
                 .withClaim(key, map)
                 .withExpiresAt(expires_refresh)
                 .sign(algorithm);
-        return new TokenData(null, null, access, refresh, expires_access);
+        return new TokenData(null, null, null, access, refresh, expires_access);
     }
 
     /**
