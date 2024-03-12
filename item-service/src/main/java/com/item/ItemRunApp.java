@@ -11,7 +11,8 @@ import org.springframework.context.annotation.ComponentScans;
 @EnableDiscoveryClient
 @ComponentScans({
         @ComponentScan("com.common.config"),
-        @ComponentScan("com.api.config")
+        @ComponentScan("com.api.config"),
+        @ComponentScan("com.common.advice")
 })
 @EnableFeignClients(basePackages = "com.api.client")
 public class ItemRunApp {

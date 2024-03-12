@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import com.common.domain.R;
+import com.common.exception.BadRequestException;
 import com.user.service.IWarehouseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -25,14 +27,17 @@ public class WarehouseController {
 
     // 新增
     @PostMapping("/saveOrUpdate")
-    public boolean saveOrUpdate(@RequestBody Warehouse warehouse) {
-        return warehouseService.saveOrUpdate(warehouse);
-//        try {
-//            warehouseService.saveOrUpdate(warehouse);
-//            return R.ok("ok");
-//        } catch (Exception e) {
-//            return R.error(500, "服务器内部错误");
-//        }
+    public R<String> saveOrUpdate(@RequestBody Warehouse warehouse) {
+        if (warehouse.getType() != 1 && warehouse.getType() != 2 && warehouse.getType() != 3) {
+            // 如果不在这个范围内，直接返回状态码为400的异常响应
+            throw new BadRequestException("type参数不合法");
+        }
+        try {
+            warehouseService.saveOrUpdate(warehouse);
+            return R.ok("ok");
+        } catch (Exception e) {
+            throw new RuntimeException("服务器内部错误");
+        }
     }
 
     // 删除
