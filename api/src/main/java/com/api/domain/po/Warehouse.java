@@ -17,7 +17,6 @@ import java.util.Date;
 @AllArgsConstructor
 @TableName("warehouses")
 public class Warehouse implements Serializable {
-    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.AUTO)
     private Integer id;
     private String name;
