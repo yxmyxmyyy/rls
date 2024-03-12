@@ -15,5 +15,7 @@ public interface IUserService extends IService<User> {
 
     Page<User> find(UserFindDTO userFindDTO, Integer pageNum, Integer pageSize);
 
+    boolean isUser(String user);
+
 //    boolean roles(TokenData tokenData);
 }

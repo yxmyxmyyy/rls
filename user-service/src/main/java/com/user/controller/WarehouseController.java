@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import com.common.domain.R;
 import com.common.exception.BadRequestException;
+import com.common.exception.BizIllegalException;
 import com.user.service.IWarehouseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContextException;
@@ -36,7 +37,7 @@ public class WarehouseController {
             warehouseService.saveOrUpdate(warehouse);
             return R.ok("ok");
         } catch (Exception e) {
-            throw new RuntimeException("服务器内部错误");
+            throw new BizIllegalException("服务器内部错误");
         }
     }
 
@@ -47,9 +48,9 @@ public class WarehouseController {
             Set<Integer> idsToDelete = new HashSet<>();
             warehouseService.collectIdsToDelete(warehouseVO, idsToDelete);
             warehouseService.removeByIds(idsToDelete);
-            return R.ok("删除成功");
+            return R.ok("ok");
         } catch (Exception e) {
-            return R.error(500, "服务器内部错误");
+            throw new BizIllegalException("服务器内部错误");
         }
     }
 
@@ -66,7 +67,7 @@ public class WarehouseController {
             List<Warehouse> list = warehouseService.list();
             return R.ok(list);
         } catch (Exception e) {
-            return R.error(500, "服务器内部错误");
+            throw new BizIllegalException("服务器内部错误");
         }
     }
 

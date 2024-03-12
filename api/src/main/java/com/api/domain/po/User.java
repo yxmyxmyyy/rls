@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -21,7 +22,7 @@ public class User implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
-    private Long warehouseId;
+    private Integer warehouseId;
     private String username;
     private String password;
     private Long phone;

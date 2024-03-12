@@ -13,7 +13,7 @@ import java.util.List;
 public class TokenData {
     private String username;
     private Integer roles;
-    private Long warehouseId;
+    private Integer warehouseId;
     private String accessToken;
     private String refreshToken;
     private Date expires;

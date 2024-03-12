@@ -1,6 +1,7 @@
 package com.user.controller;
 
 import com.api.domain.po.User;
+import com.common.exception.BadRequestException;
 import com.user.service.ILoginService;
 import com.common.result.TokenData;
 import com.common.result.UserResult;
@@ -19,7 +20,7 @@ public class LoginController {
     public UserResult login(@RequestBody User user) {
         TokenData tokenData = ILoginService.login(user);
         if (tokenData != null) return UserResult.success(tokenData);
-        return UserResult.fail();
+        throw new BadRequestException("用户名或密码错误");
     }
 
     @GetMapping("/get/{token}")

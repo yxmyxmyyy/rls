@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.api.domain.po.User;
 import com.common.domain.R;
+import com.common.exception.BadRequestException;
 import com.user.mapper.UserMapper;
 import com.user.service.IUserService;
 import com.common.result.TokenData;
@@ -41,19 +42,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (userFindDTO.getPhone() != null) {
             qw.eq("phone", userFindDTO.getPhone());
         }
+        qw.select("id", "username", "status", "warehouse_id", "phone", "role", "sex" ,"create_time");
         // 执行分页和条件查询
         return page(page, qw);
     }
     public boolean insert(User user) {
-        QueryWrapper<User> qw = new QueryWrapper<>();
-        qw.eq("username", user.getUsername());
-        User one = getOne(qw);
-        if (one != null) return false;
-        //    默认密码为 123456
-        String password = DigestUtils.md5DigestAsHex("x123456789".getBytes());
+        String password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
         user.setPassword(password);
-        Date date = new Date();
-        return save(user);
+        return saveOrUpdate(user);
+    }
+
+    //判断用户是否存在
+    public boolean isUser(String user){
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.eq("username", user);
+        User one = getOne(qw);
+        if (one != null) {
+            return true;
+        };
+        return false;
     }
 
 //    @Override

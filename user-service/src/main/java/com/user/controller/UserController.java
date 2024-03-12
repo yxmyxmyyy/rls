@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.api.domain.po.User;
 import com.common.domain.R;
+import com.common.exception.BadRequestException;
+import com.common.exception.BizIllegalException;
 import com.user.service.IUserService;
 import com.common.result.TokenData;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,21 @@ public class UserController {
         try {
             return R.ok(userService.find(userFindDTO,pageNum, pageSize));
         } catch (Exception e) {
-            return R.error(500, "服务器内部错误");
+            throw new BizIllegalException("服务器内部错误");
+        }
+    }
+
+    //新增或修改
+    @PostMapping("/saveOrUpdate")
+    public R<String> saveOrUpdate(@RequestBody User user) {
+        if (userService.isUser(user.getUsername())){
+            throw new BadRequestException("用户名已存在");
+        }
+        try {
+            userService.insert(user);
+            return R.ok("ok");
+        } catch (Exception e) {
+            throw new BizIllegalException("服务器内部错误");
         }
     }
 
@@ -38,7 +54,7 @@ public class UserController {
             userService.removeByIds(ids);
             return R.ok("删除成功");
         } catch (Exception e) {
-            return R.error(500, "服务器内部错误");
+            throw new BizIllegalException("服务器内部错误");
         }
     }
 
@@ -49,7 +65,7 @@ public class UserController {
             userService.removeById(id);
             return R.ok("删除成功");
         } catch (Exception e) {
-            return R.error(500, "服务器内部错误");
+            throw new BizIllegalException("服务器内部错误");
         }
     }
 
@@ -67,8 +83,13 @@ public class UserController {
 
     // 修改用户
     @PutMapping("/update")
-    public boolean updatePassWd(@RequestBody User user) {
-        return userService.updateById(user);
+    public R<String> update(@RequestBody User user) {
+        try {
+            userService.insert(user);
+            return R.ok("ok");
+        } catch (Exception e) {
+            throw new BizIllegalException("服务器内部错误");
+        }
     }
 
 
