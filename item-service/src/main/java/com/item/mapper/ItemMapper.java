@@ -20,7 +20,7 @@ public interface ItemMapper extends BaseMapper<Item> {
             "#{productId}" +
             "</foreach>" +
             "</script>")
-    List<Item> checkStockBatch(@Param("warehouseId") Long warehouseId, @Param("productIds") List<Long> productIds);
+    List<Item> checkStockBatch(@Param("warehouseId") Integer warehouseId, @Param("productIds") List<Long> productIds);
 
     // 批量扣减库存
     @Update("<script>" +
@@ -36,7 +36,7 @@ public interface ItemMapper extends BaseMapper<Item> {
             " #{load.productId}" +
             "</foreach>" +
             "</script>")
-    int decreaseStockBatch(@Param("warehouseId") Long warehouseId, @Param("vehicleLoads") List<VehicleLoad> vehicleLoads);
+    int decreaseStockBatch(@Param("warehouseId") Integer warehouseId, @Param("vehicleLoads") List<VehicleLoad> vehicleLoads);
 
     //检测库存
     @Select("<script>" +
@@ -45,7 +45,7 @@ public interface ItemMapper extends BaseMapper<Item> {
             "#{productId}" +
             "</foreach>" +
             "</script>")
-    Set<Long> findExistingProductIds(@Param("warehouseId") Long warehouseId, @Param("productIds") Set<Long> productIds);
+    Set<Long> findExistingProductIds(@Param("warehouseId") Integer warehouseId, @Param("productIds") Set<Long> productIds);
 
     //批量新增库存
     @Update("<script>" +
@@ -61,5 +61,5 @@ public interface ItemMapper extends BaseMapper<Item> {
             "#{load.productId}" +
             "</foreach>" +
             "</script>")
-    int increaseStockBatch(@Param("warehouseId") Long warehouseId, @Param("vehicleLoads") List<VehicleLoad> vehicleLoads);
+    int increaseStockBatch(@Param("warehouseId") Integer warehouseId, @Param("vehicleLoads") List<VehicleLoad> vehicleLoads);
 }

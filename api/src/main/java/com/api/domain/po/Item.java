@@ -20,7 +20,8 @@ public class Item implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long itemId;
-    private Long warehouseId;
+    private Integer warehouseId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long productId;
     private String productName;
     private Double stock;

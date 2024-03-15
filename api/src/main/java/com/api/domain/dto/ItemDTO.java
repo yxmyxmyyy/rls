@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemDTO implements Serializable {
-    private Long warehouseId;
+    private Integer warehouseId;
     private List<VehicleLoad> vehicleLoad;
 }
 

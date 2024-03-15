@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class TransportVO implements Serializable {
     private String description;
-    private Long originWarehouseId;
-    private Long destinationWarehouseId;
+    private Integer originWarehouseId;
+    private Integer destinationWarehouseId;
     private String status;
     private List<VehicleLoad> VehicleLoad;
 }

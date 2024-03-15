@@ -19,8 +19,11 @@ public class VehicleLoad implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long loadId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long vehicleId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long taskId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long productId;
     private String productName;
     private Double weight;

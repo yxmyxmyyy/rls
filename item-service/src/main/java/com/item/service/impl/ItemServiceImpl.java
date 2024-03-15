@@ -27,7 +27,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
     @Transactional
     public boolean deductStock(List<VehicleLoad> vehicleLoads) {
 //        Long warehouseId = UserContext.getWarehouseId(); // 获取当前用户的warehouseId
-        Long warehouseId = 1L;
+        Integer warehouseId = 1;
         // 将VehicleLoad转换为productId列表
         List<Long> productIds = vehicleLoads.stream().map(VehicleLoad::getProductId).collect(Collectors.toList());
 
@@ -65,7 +65,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
 
     @Transactional
     public List<Item> processVehicleLoads(ItemDTO itemDTO) {
-        Long id = itemDTO.getWarehouseId();
+        Integer id = itemDTO.getWarehouseId();
         List<VehicleLoad> mergedVehicleLoads = mergeVehicleLoads(itemDTO.getVehicleLoad());
 
         // 获取所有的productId

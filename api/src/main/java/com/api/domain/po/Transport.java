@@ -21,8 +21,8 @@ public class Transport implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long taskId;
     private String description;
-    private Long originWarehouseId;
-    private Long destinationWarehouseId;
+    private Integer originWarehouseId;
+    private Integer destinationWarehouseId;
     private String status;
     private Date createdAt;
     private Date updatedAt;

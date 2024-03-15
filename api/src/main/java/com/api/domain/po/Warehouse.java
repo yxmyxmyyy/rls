@@ -26,7 +26,8 @@ public class Warehouse implements Serializable {
     private Long phone;
     private String principal;
     private Date createTime;
-    private String location;
+    private Double lng;
+    private Double lat;
     private Integer status;
     private String remark;
 }
