@@ -21,6 +21,7 @@ public class Product implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long productId;
     private String productName;
+    private Date createTime;
 }
 
 

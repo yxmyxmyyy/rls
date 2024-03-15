@@ -13,12 +13,6 @@ import java.util.List;
 @FeignClient(value = "item-service")
 public interface IItemClient {
 
-    @GetMapping("/item/find")
-    List<Vehicle> findAll();
-
-    @PutMapping("/item/update")
-    boolean update(@RequestBody List<Vehicle> vehicle);
-
     @PutMapping("/item/deductStock")
     boolean deductStock(@RequestBody List<VehicleLoad> vehicleLoads);
 

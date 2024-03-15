@@ -4,7 +4,10 @@ package com.item.service.impl;
 import com.api.domain.dto.ItemDTO;
 import com.api.domain.dto.VehicleLoadDTO;
 import com.api.domain.po.Item;
+import com.api.domain.po.Item;
 import com.api.domain.po.VehicleLoad;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.item.mapper.ItemMapper;
 import com.item.service.IItemService;
@@ -23,6 +26,27 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
 
     @Autowired
     private ItemMapper itemMapper;
+
+    public Page<Item> find(Item Item, Integer pageNum, Integer pageSize) {
+        // 创建Page对象，其中current是当前页数，size是每页显示记录的数量
+        Page<Item> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<Item> qw = new QueryWrapper<>();
+        // 根据条件添加查询条件，这里省略了空值检查，实际使用时应该加上
+        if (Item.getItemId() != null){
+            qw.eq("item_id", Item.getItemId());
+        }
+        if (Item.getProductId() != null){
+            qw.eq("product_id", Item.getItemId());
+        }
+        if (Item.getProductName() != null && !Item.getProductName().isEmpty()) {
+            qw.eq("product_name", Item.getProductName());
+        }
+        if (Item.getWarehouseId() !=null){
+            qw.eq("warehouse_id", Item.getWarehouseId());
+        }
+        // 执行分页和条件查询
+        return page(page, qw);
+    }
 
     @Transactional
     public boolean deductStock(List<VehicleLoad> vehicleLoads) {
