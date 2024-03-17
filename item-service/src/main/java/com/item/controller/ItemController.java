@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.common.domain.R;
+import com.common.exception.BadRequestException;
 import com.common.exception.BizIllegalException;
 import com.item.service.IItemService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class ItemController {
         }
     }
 
-    //新增或修改
+    //入库
     @PostMapping("/saveOrUpdate")
     public R<String> saveOrUpdate(@RequestBody List<VehicleLoad> vehicleLoad) {
         try {
@@ -82,9 +83,13 @@ public class ItemController {
 
     // 检测库存并扣减
     @PutMapping("/deductStock")
-    public boolean deductStock(@RequestBody List<VehicleLoad> vehicleLoads) {
-        itemService.deductStock(vehicleLoads);
-        return true;
+    public R<String> deductStock(@RequestBody List<VehicleLoad> vehicleLoads) {
+        try {
+            itemService.deductStock(vehicleLoads);
+            return R.ok("ok");
+        } catch (Exception e) {
+            throw new BadRequestException("库存不足");
+        }
     }
 
     //添加存在的库存，返回不存在的库存
