@@ -11,6 +11,8 @@ import com.api.domain.po.Vehicle;
 import com.api.domain.po.VehicleLoad;
 import com.api.domain.vo.TransportVO;
 import com.api.domain.vo.VehicleTypeVO;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.common.exception.BadRequestException;
 import com.common.exception.CommonException;
@@ -37,17 +39,21 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
     public List<VehicleTypeVO> processNewTransport(TransportVO transportVO) {
         //扣减库存
         try {
-            itemClient.deductStock(transportVO.getVehicleLoad());
+            itemClient.deductStock(transportVO.getOriginWarehouseId(),transportVO.getVehicleLoad());
         } catch (Exception e) {
             throw new BadRequestException("库存不足");
         }
         //创建订单
         Transport ts = new Transport();
-        ts.setDescription(transportVO.getDescription());
-        ts.setOriginWarehouseId(transportVO.getOriginWarehouseId());
-        ts.setDestinationWarehouseId(transportVO.getDestinationWarehouseId());
-        ts.setStatus("进行中");
-        save(ts);
+        try{
+            ts.setDescription(transportVO.getDescription());
+            ts.setOriginWarehouseId(transportVO.getOriginWarehouseId());
+            ts.setDestinationWarehouseId(transportVO.getDestinationWarehouseId());
+            ts.setStatus("进行中");
+            save(ts);
+        }catch (Exception e){
+            throw new BadRequestException("订单创建失败");
+        }
         //分配车辆
         AllocationResultDTO allocationResult = vehicleLoadService.allocateCargo(vehicleClient.findAll(), transportVO.getVehicleLoad());
         allocationResult.getVehicleLoads().forEach(vehicleLoad -> vehicleLoad.setTaskId(ts.getTaskId()));
@@ -90,8 +96,30 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
 
         vehicleClient.update(vehicles);
         vehicleLoadService.removeBatchByIds(loadIds);
-
+        transport.setCreatedAt(null);
+        transport.setUpdatedAt(null);
         return updateById(transport);
 
+    }
+
+    public Page<Transport> find(Transport Transport, Integer pageNum, Integer pageSize) {
+        // 创建Page对象，其中current是当前页数，size是每页显示记录的数量
+        Page<Transport> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<Transport> qw = new QueryWrapper<>();
+        // 根据条件添加查询条件，这里省略了空值检查，实际使用时应该加上
+        if (Transport.getTaskId() != null){
+            qw.eq("task_id", Transport.getTaskId());
+        }
+        if (Transport.getDestinationWarehouseId() != null){
+            qw.eq("destination_warehouse_id", Transport.getDestinationWarehouseId());
+        }
+        if (Transport.getStatus() != null && !Transport.getStatus().isEmpty()) {
+            qw.eq("status", Transport.getStatus());
+        }
+        if (Transport.getOriginWarehouseId() !=null){
+            qw.eq("origin_warehouse_id", Transport.getOriginWarehouseId());
+        }
+        // 执行分页和条件查询
+        return page(page, qw);
     }
 }

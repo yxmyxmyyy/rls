@@ -49,14 +49,13 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
     }
 
     @Transactional
-    public boolean deductStock(List<VehicleLoad> vehicleLoads) {
+    public boolean deductStock(Integer id,List<VehicleLoad> vehicleLoads) {
 //        Long warehouseId = UserContext.getWarehouseId(); // 获取当前用户的warehouseId
-        Integer warehouseId = 1;
         // 将VehicleLoad转换为productId列表
         List<Long> productIds = vehicleLoads.stream().map(VehicleLoad::getProductId).collect(Collectors.toList());
 
         // 检查库存
-        List<Item> items = itemMapper.checkStockBatch(warehouseId, productIds);
+        List<Item> items = itemMapper.checkStockBatch(id, productIds);
         for (VehicleLoad load : vehicleLoads) {
             Item item = items.stream().filter(i -> i.getProductId().equals(load.getProductId())).findFirst().orElse(null);
             if (item == null || item.getStock() < load.getWeight()) {
@@ -66,7 +65,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
         }
 
         // 扣减库存
-        int updatedRows = itemMapper.decreaseStockBatch(warehouseId, vehicleLoads);
+        int updatedRows = itemMapper.decreaseStockBatch(id, vehicleLoads);
         if (updatedRows != vehicleLoads.size()) {
             // 处理扣减库存失败的情况，可能是并发操作导致的库存已变化
             throw new IllegalStateException("Failed to decrease stock properly");

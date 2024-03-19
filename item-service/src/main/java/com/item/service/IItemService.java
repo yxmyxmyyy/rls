@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IItemService extends IService<Item> {
 
-    boolean deductStock(List<VehicleLoad> vehicleLoads);
+    boolean deductStock(Integer id,List<VehicleLoad> vehicleLoads);
 
     List<VehicleLoad> mergeVehicleLoads(List<VehicleLoad> vehicleLoads);
 

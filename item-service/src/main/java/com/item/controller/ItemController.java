@@ -83,9 +83,9 @@ public class ItemController {
 
     // 检测库存并扣减
     @PutMapping("/deductStock")
-    public R<String> deductStock(@RequestBody List<VehicleLoad> vehicleLoads) {
+    public R<String> deductStock(@RequestParam Integer id,@RequestBody List<VehicleLoad> vehicleLoads) {
         try {
-            itemService.deductStock(vehicleLoads);
+            itemService.deductStock(id,vehicleLoads);
             return R.ok("ok");
         } catch (Exception e) {
             throw new BadRequestException("库存不足");
