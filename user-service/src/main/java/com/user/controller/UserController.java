@@ -28,8 +28,8 @@ public class UserController {
     public R<Page<User>> find(@RequestBody UserFindDTO userFindDTO,@RequestParam Integer pageNum,@RequestParam Integer pageSize) {
         try {
             return R.ok(userService.find(userFindDTO,pageNum, pageSize));
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -41,9 +41,10 @@ public class UserController {
         }
         try {
             userService.insert(user);
+            userService.clearUserFindCache();
             return R.ok("ok");
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -52,9 +53,10 @@ public class UserController {
     public R<String> delete(@RequestBody List<Serializable> ids) {
         try {
             userService.removeByIds(ids);
+            userService.clearUserFindCache();
             return R.ok("删除成功");
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -63,21 +65,24 @@ public class UserController {
     public R<String> deleteOne(@PathVariable Serializable id) {
         try {
             userService.removeById(id);
+            userService.clearUserFindCache();
             return R.ok("删除成功");
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 
     // 新增用户
     @PostMapping("/insert")
     public boolean insert(@RequestBody User user) {
+        userService.clearUserFindCache();
         return userService.insert(user);
     }
 
     // 删除用户
     @DeleteMapping("/delete/{id}")
     public boolean del(@PathVariable Serializable id) {
+        userService.clearUserFindCache();
         return userService.removeById(id);
     }
 
@@ -85,10 +90,11 @@ public class UserController {
     @PutMapping("/update")
     public R<String> update(@RequestBody User user) {
         try {
+            userService.clearUserFindCache();
             userService.insert(user);
             return R.ok("ok");
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 

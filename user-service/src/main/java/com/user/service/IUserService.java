@@ -17,5 +17,7 @@ public interface IUserService extends IService<User> {
 
     boolean isUser(String user);
 
+    void clearUserFindCache();
+
 //    boolean roles(TokenData tokenData);
 }
