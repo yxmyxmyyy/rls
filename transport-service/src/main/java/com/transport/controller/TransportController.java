@@ -1,25 +1,26 @@
 package com.transport.controller;
 
 
-import com.api.client.IVehicleClient;
-import com.api.domain.dto.AllocationResultDTO;
-import com.api.domain.po.Item;
+import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson.JSON;
+import com.api.client.IItemClient;
+import com.api.domain.dto.TransportDTO;
 import com.api.domain.po.Transport;
+import com.api.domain.po.TransportLog;
 import com.api.domain.vo.TransportVO;
-import com.api.domain.vo.VehicleTypeVO;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.common.domain.R;
 import com.common.exception.BadRequestException;
-import com.common.exception.BizIllegalException;
-import com.common.exception.CommonException;
+import com.transport.service.ITransportLogService;
 import com.transport.service.ITransportService;
-import com.transport.service.IVehicleLoadService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.json.Json;
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
 
 @RestController
 @CrossOrigin
@@ -29,26 +30,35 @@ public class TransportController {
 
     private final ITransportService TransportService;
 
+    private final ITransportLogService TransportLogService;
+
+    private final IItemClient itemClient;
+
+
     //新增订单
     @PostMapping("/new")
-    public R<List<VehicleTypeVO>> insert1(@RequestBody TransportVO transportVO) {
-        try {
-            List<VehicleTypeVO> result = TransportService.processNewTransport(transportVO);
-            return R.ok(result);
-        }  catch (BadRequestException e) {
-            throw new BadRequestException(e.getMessage());
+    public R<String> insert1(@RequestBody TransportVO transportVO) {
+        boolean item = itemClient.deductStock(transportVO.getOriginWarehouseId(),transportVO.getVehicleLoad());
+        if (!item){
+            throw new BadRequestException("库存不足");
         }
+        Long id = IdUtil.getSnowflakeNextId();
+        TransportService.insert(id,transportVO);
+        TransportService.MqSend(id,transportVO);
+        TransportLogService.insert(id,transportVO);
+        return R.ok("已创建订单，请稍后在订单详细查询状态");
+    }
+
+    @GetMapping("/test/{id}")
+    public R<TransportLog> test(@PathVariable Long id){
+        return R.ok(TransportLogService.getById(id));
     }
 
     //结算订单
     @PutMapping("/end/{id}")
     public R<String> end(@PathVariable Long id) {
-        try {
-            TransportService.endTransport(id);
-            return R.ok("结算成功");
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
-        }
+        TransportService.endTransport(id);
+        return R.ok("结算成功");
     }
     // 删除
     @DeleteMapping("/delete/{id}")
@@ -65,24 +75,16 @@ public class TransportController {
     //分页查询入库
     @PostMapping("/findin")
     public R<Page<Transport>> findin(@RequestBody Transport Transport, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        try {
-            Integer warehouseId = 1;
-            Transport.setDestinationWarehouseId(warehouseId);
-            return R.ok(TransportService.find(Transport,pageNum, pageSize));
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
-        }
+        Integer warehouseId = 1;
+        Transport.setDestinationWarehouseId(warehouseId);
+        return R.ok(TransportService.find(Transport,pageNum, pageSize));
     }
 
     //分页查询出库
     @PostMapping("/findout")
     public R<Page<Transport>> findout(@RequestBody Transport Transport, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        try {
-            Integer warehouseId = 1;
-            Transport.setOriginWarehouseId(warehouseId);
-            return R.ok(TransportService.find(Transport,pageNum, pageSize));
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
-        }
+        Integer warehouseId = 1;
+        Transport.setOriginWarehouseId(warehouseId);
+        return R.ok(TransportService.find(Transport,pageNum, pageSize));
     }
 }

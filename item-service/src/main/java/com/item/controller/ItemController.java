@@ -83,13 +83,8 @@ public class ItemController {
 
     // 检测库存并扣减
     @PutMapping("/deductStock")
-    public R<String> deductStock(@RequestParam Integer id,@RequestBody List<VehicleLoad> vehicleLoads) {
-        try {
-            itemService.deductStock(id,vehicleLoads);
-            return R.ok("ok");
-        } catch (Exception e) {
-            throw new BadRequestException("库存不足");
-        }
+    public boolean deductStock(@RequestParam Integer id,@RequestBody List<VehicleLoad> vehicleLoads) {
+        return itemService.deductStock(id,vehicleLoads);
     }
 
     //添加存在的库存，返回不存在的库存

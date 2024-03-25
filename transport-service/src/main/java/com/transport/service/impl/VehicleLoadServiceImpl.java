@@ -9,8 +9,10 @@ import com.api.domain.vo.VehicleTypeVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.common.exception.BizIllegalException;
 import com.transport.mapper.VehicleLoadMapper;
 import com.transport.service.IVehicleLoadService;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,13 +21,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class VehicleLoadServiceImpl extends ServiceImpl<VehicleLoadMapper, VehicleLoad> implements IVehicleLoadService {
-
+    @GlobalTransactional
     public AllocationResultDTO allocateCargo(List<Vehicle> vehicles, List<VehicleLoad> cargo) {
         // Initialize the map for vehicle counting by capacity
         Map<Double, Integer> vehicleCountMap = new HashMap<>();
-
-        // Sort vehicles by capacity in descending order
-        vehicles.sort((v1, v2) -> v2.getCapacity().compareTo(v1.getCapacity()));
 
         List<VehicleLoad> allocatedLoads = new ArrayList<>();
         List<Vehicle> usedVehicles = new ArrayList<>();
@@ -65,11 +64,15 @@ public class VehicleLoadServiceImpl extends ServiceImpl<VehicleLoadMapper, Vehic
 
             if (vehicleUsed) {
                 allocatedLoads.addAll(loadsForThisVehicle);
-                vehicle.setStatus("使用中");
                 usedVehicles.add(vehicle);
                 // Update the vehicle count map
                 vehicleCountMap.put(vehicle.getCapacity(), vehicleCountMap.getOrDefault(vehicle.getCapacity(), 0) + 1);
             }
+        }
+
+        // After attempting to allocate all cargo, if there's still cargo left, throw an exception
+        if (!cargo.isEmpty()) {
+            throw new BizIllegalException("剩余车辆无法装载全部货物");
         }
 
         // Convert the map to a list of VehicleTypeVO

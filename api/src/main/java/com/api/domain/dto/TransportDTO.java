@@ -1,5 +1,7 @@
-package com.api.domain.po;
+package com.api.domain.dto;
 
+import com.api.domain.po.Transport;
+import com.api.domain.vo.TransportVO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -15,15 +17,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("vehicle")
-public class Vehicle implements Serializable {
-    @JsonSerialize(using = ToStringSerializer.class)
-    @TableId(type = IdType.ASSIGN_ID)
-    private Long vehicleId;
-    private String licensePlate;
-    private String type;
-    private Double capacity;
-    private Integer status;
+public class TransportDTO implements Serializable {
+    private TransportVO transportVO;
+    private Long id;
 }
 
 

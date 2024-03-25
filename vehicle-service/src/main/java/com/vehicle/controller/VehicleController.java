@@ -4,6 +4,8 @@ import com.api.domain.po.Vehicle;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.common.exception.BadRequestException;
+import com.common.exception.BizIllegalException;
 import com.vehicle.service.IVehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,14 @@ import java.util.List;
 public class VehicleController {
 
     private final IVehicleService VehicleService;
+
+
+    //使用车
+    @PutMapping("/use")
+    public boolean use(@RequestBody List<Long> idList) {
+        VehicleService.decreaseStatusByIds(idList);
+        return true;
+    }
 
     // 新增
     @PostMapping("/insert")
@@ -43,9 +53,15 @@ public class VehicleController {
         // 创建QueryWrapper对象
         QueryWrapper<Vehicle> queryWrapper = new QueryWrapper<>();
         // 添加条件，假设空闲的状态值为"空闲"
-        queryWrapper.eq("status", "空闲");
-        // 使用Service的lambdaQuery方法，传入构建的查询条件
-        return VehicleService.list(queryWrapper);
+        queryWrapper.eq("status", 1);
+        //降序
+        queryWrapper.orderByDesc("capacity");
+        //判断是否为空，如果为空抛出异常
+        List<Vehicle> vehicles = VehicleService.list(queryWrapper);
+        if (vehicles.isEmpty()) {
+            throw new BizIllegalException("没有空闲车辆");
+        }
+        return vehicles;
     }
     // 分页查询
     @GetMapping("/find")

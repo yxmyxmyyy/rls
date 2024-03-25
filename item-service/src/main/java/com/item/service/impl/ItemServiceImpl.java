@@ -60,7 +60,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
             Item item = items.stream().filter(i -> i.getProductId().equals(load.getProductId())).findFirst().orElse(null);
             if (item == null || item.getStock() < load.getWeight()) {
                 // 库存不足
-                throw new IllegalStateException("Stock insufficient for productId: " + load.getProductId());
+                throw new IllegalStateException("商品库存不足: " + load.getProductId());
             }
         }
 
