@@ -14,5 +14,6 @@ spring:
           - dataId: shared-sentinel.yaml
           - dataId: shared-seata.yaml
           - dataId: shared-redis.yaml # 共享日志配置
+          - dataId: shared-rocketmq.yaml
 #          - dataId: shared-swagger.yaml # 共享日志配置
 #          - dataId: shared-seata.yaml # 共享seata配置
