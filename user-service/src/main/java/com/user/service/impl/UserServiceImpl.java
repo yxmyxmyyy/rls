@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,8 +61,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 执行分页和条件查询
         Page<User> result = page(page, qw);
 
-        // 将查询结果存入缓存，设置过期时间为5分钟
-        valueOperations.set(key, result, 5, TimeUnit.MINUTES);
+        // 生成10到20分钟之间的随机数
+        int expirationTime = ThreadLocalRandom.current().nextInt(10, 21);
+
+        // 将查询结果存入缓存，设置过期时间为随机的10到20分钟
+        valueOperations.set(key, result, expirationTime, TimeUnit.MINUTES);
 
         return result;
     }

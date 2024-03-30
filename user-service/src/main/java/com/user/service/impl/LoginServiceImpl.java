@@ -23,6 +23,7 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
     public TokenData login(User user) {
         QueryWrapper<User> qw = new QueryWrapper<>();
         qw.eq("username", user.getUsername());
+        qw.eq("password", DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
         qw.eq("status", 1);
         User u = getOne(qw);
         if (u == null) return null;

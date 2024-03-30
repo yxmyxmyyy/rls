@@ -38,6 +38,8 @@ public class TransportController {
     //新增订单
     @PostMapping("/new")
     public R<String> insert1(@RequestBody TransportVO transportVO) {
+        Integer warehouseId = 1;
+        transportVO.setOriginWarehouseId(warehouseId);
         boolean item = itemClient.deductStock(transportVO.getOriginWarehouseId(),transportVO.getVehicleLoad());
         if (!item){
             throw new BadRequestException("库存不足");
@@ -61,7 +63,7 @@ public class TransportController {
         return R.ok("结算成功");
     }
     // 删除
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/deleteOne/{id}")
     public boolean del(@PathVariable Serializable id) {
         return TransportService.removeById(id);
     }

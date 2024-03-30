@@ -20,10 +20,15 @@ import com.transport.service.IVehicleLoadService;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +43,9 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
     private final ITransportLogService TransportLogService;
 
     private final RocketMQTemplate rocketMQTemplate;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Async
     public void MqSend(Long id,TransportVO transportVO) {
@@ -57,6 +65,7 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         ts.setDescription("进行中");
         ts.setStatus("进行中");
         save(ts);
+        clearPageFindCache();
     }
     @GlobalTransactional
     public void processNewTransport(TransportDTO transportDTO) {
@@ -74,6 +83,7 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         }
         allocationResult.getVehicleLoads().forEach(vehicleLoad -> vehicleLoad.setTaskId(transportDTO.getId()));
         vehicleLoadService.saveBatch(allocationResult.getVehicleLoads());
+        clearPageFindCache();
     }
 
     //失败订单处理
@@ -96,6 +106,7 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         tl.setContent(jsonString);
         tl.setType(1);
         TransportLogService.save(tl);
+        clearPageFindCache();
     }
 
     //结束订单
@@ -129,11 +140,23 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         vehicleLoadService.removeBatchByIds(loadIds);
         transport.setCreatedAt(null);
         transport.setUpdatedAt(null);
+
+        clearPageFindCache();
         return updateById(transport);
 
     }
 
     public Page<Transport> find(Transport Transport, Integer pageNum, Integer pageSize) {
+        String key = "transport:find:" + Transport.hashCode() + ":" + pageNum + ":" + pageSize;
+
+        // 尝试从缓存获取数据
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        Page<Transport> cachePage = (Page<Transport>) valueOperations.get(key);
+
+        if (cachePage != null) {
+            // 缓存命中，直接返回缓存数据
+            return cachePage;
+        }
         // 创建Page对象，其中current是当前页数，size是每页显示记录的数量
         Page<Transport> page = new Page<>(pageNum, pageSize);
         QueryWrapper<Transport> qw = new QueryWrapper<>();
@@ -151,6 +174,35 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
             qw.eq("origin_warehouse_id", Transport.getOriginWarehouseId());
         }
         // 执行分页和条件查询
-        return page(page, qw);
+        Page<Transport> result = page(page, qw);
+
+        // 生成10到20分钟之间的随机数
+        int expirationTime = ThreadLocalRandom.current().nextInt(10, 21);
+
+        // 将查询结果存入缓存，设置过期时间为随机的10到20分钟
+        valueOperations.set(key, result, expirationTime, TimeUnit.MINUTES);
+
+        return result;
+    }
+
+    public void clearPageFindCache() {
+        String pattern = "transport:find:*";
+        // 使用ScanOptions构建匹配模式
+        ScanOptions options = ScanOptions.scanOptions().match(pattern).build();
+
+        List<String> keysToDelete = new ArrayList<>();
+        // 使用execute方法进行扫描
+        redisTemplate.execute((RedisCallback<Void>) connection -> {
+            Cursor<byte[]> cursor = connection.scan(options);
+            while (cursor.hasNext()) {
+                keysToDelete.add(new String(cursor.next()));
+            }
+            return null;
+        });
+
+        // 删除匹配的keys
+        if (!keysToDelete.isEmpty()) {
+            redisTemplate.delete(keysToDelete);
+        }
     }
 }

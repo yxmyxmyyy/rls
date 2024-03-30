@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.item.mapper.ItemMapper;
 import com.item.service.IItemService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements IItemService {
 
-    @Autowired
-    private ItemMapper itemMapper;
+
+    private final ItemMapper itemMapper;
 
     public Page<Item> find(Item Item, Integer pageNum, Integer pageSize) {
         // 创建Page对象，其中current是当前页数，size是每页显示记录的数量
@@ -36,7 +38,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
             qw.eq("item_id", Item.getItemId());
         }
         if (Item.getProductId() != null){
-            qw.eq("product_id", Item.getItemId());
+            qw.eq("product_id", Item.getProductId());
         }
         if (Item.getProductName() != null && !Item.getProductName().isEmpty()) {
             qw.eq("product_name", Item.getProductName());
