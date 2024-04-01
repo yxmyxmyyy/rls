@@ -26,11 +26,7 @@ public class UserController {
     //查询全部
     @PostMapping("/find")
     public R<Page<User>> find(@RequestBody UserFindDTO userFindDTO,@RequestParam Integer pageNum,@RequestParam Integer pageSize) {
-        try {
-            return R.ok(userService.find(userFindDTO,pageNum, pageSize));
-        } catch (BadRequestException e) {
-            throw new BadRequestException(e.getMessage());
-        }
+        return R.ok(userService.find(userFindDTO,pageNum, pageSize));
     }
 
     //新增或修改
@@ -39,37 +35,25 @@ public class UserController {
         if (userService.isUser(user.getUsername())){
             throw new BadRequestException("用户名已存在");
         }
-        try {
-            userService.insert(user);
-            userService.clearUserFindCache();
-            return R.ok("ok");
-        } catch (BadRequestException e) {
-            throw new BadRequestException(e.getMessage());
-        }
+        userService.insert(user);
+        userService.clearUserFindCache();
+        return R.ok("ok");
     }
 
     //批量删除
     @DeleteMapping("/delete")
     public R<String> delete(@RequestBody List<Serializable> ids) {
-        try {
-            userService.removeByIds(ids);
-            userService.clearUserFindCache();
-            return R.ok("删除成功");
-        } catch (BadRequestException e) {
-            throw new BadRequestException(e.getMessage());
-        }
+        userService.removeByIds(ids);
+        userService.clearUserFindCache();
+        return R.ok("删除成功");
     }
 
     //删除一个
     @DeleteMapping("/deleteOne/{id}")
     public R<String> deleteOne(@PathVariable Serializable id) {
-        try {
-            userService.removeById(id);
-            userService.clearUserFindCache();
-            return R.ok("删除成功");
-        } catch (BadRequestException e) {
-            throw new BadRequestException(e.getMessage());
-        }
+        userService.removeById(id);
+        userService.clearUserFindCache();
+        return R.ok("删除成功");
     }
 
     // 新增用户
@@ -89,13 +73,9 @@ public class UserController {
     // 修改用户
     @PutMapping("/update")
     public R<String> update(@RequestBody User user) {
-        try {
-            userService.clearUserFindCache();
-            userService.insert(user);
-            return R.ok("ok");
-        } catch (BadRequestException e) {
-            throw new BadRequestException(e.getMessage());
-        }
+        userService.clearUserFindCache();
+        userService.insert(user);
+        return R.ok("ok");
     }
 
 

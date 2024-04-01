@@ -19,5 +19,7 @@ public interface ITransportService extends IService<Transport> {
 
     Page<Transport> find(Transport Transport, Integer pageNum, Integer pageSize);
 
+    void clearPageFindCache();
+
 
 }

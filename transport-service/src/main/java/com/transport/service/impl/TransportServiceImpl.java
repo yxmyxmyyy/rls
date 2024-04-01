@@ -177,7 +177,7 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         Page<Transport> result = page(page, qw);
 
         // 生成10到20分钟之间的随机数
-        int expirationTime = ThreadLocalRandom.current().nextInt(10, 21);
+        int expirationTime = ThreadLocalRandom.current().nextInt(1, 2);
 
         // 将查询结果存入缓存，设置过期时间为随机的10到20分钟
         valueOperations.set(key, result, expirationTime, TimeUnit.MINUTES);

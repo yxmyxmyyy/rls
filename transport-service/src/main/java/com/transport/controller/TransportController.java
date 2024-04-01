@@ -38,7 +38,7 @@ public class TransportController {
     //新增订单
     @PostMapping("/new")
     public R<String> insert1(@RequestBody TransportVO transportVO) {
-        Integer warehouseId = 1;
+        Integer warehouseId = 20;
         transportVO.setOriginWarehouseId(warehouseId);
         boolean item = itemClient.deductStock(transportVO.getOriginWarehouseId(),transportVO.getVehicleLoad());
         if (!item){
@@ -65,6 +65,7 @@ public class TransportController {
     // 删除
     @DeleteMapping("/deleteOne/{id}")
     public boolean del(@PathVariable Serializable id) {
+        TransportService.clearPageFindCache();
         return TransportService.removeById(id);
     }
 
@@ -77,7 +78,7 @@ public class TransportController {
     //分页查询入库
     @PostMapping("/findin")
     public R<Page<Transport>> findin(@RequestBody Transport Transport, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        Integer warehouseId = 1;
+        Integer warehouseId = 20;
         Transport.setDestinationWarehouseId(warehouseId);
         return R.ok(TransportService.find(Transport,pageNum, pageSize));
     }
@@ -85,7 +86,7 @@ public class TransportController {
     //分页查询出库
     @PostMapping("/findout")
     public R<Page<Transport>> findout(@RequestBody Transport Transport, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        Integer warehouseId = 1;
+        Integer warehouseId = 20;
         Transport.setOriginWarehouseId(warehouseId);
         return R.ok(TransportService.find(Transport,pageNum, pageSize));
     }

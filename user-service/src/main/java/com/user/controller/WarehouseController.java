@@ -33,25 +33,17 @@ public class WarehouseController {
             // 如果不在这个范围内，直接返回状态码为400的异常响应
             throw new BadRequestException("type参数不合法");
         }
-        try {
-            warehouseService.saveOrUpdate(warehouse);
-            return R.ok("ok");
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
-        }
+        warehouseService.saveOrUpdate(warehouse);
+        return R.ok("ok");
     }
 
     // 删除
     @DeleteMapping("/delete")
     public R<String> delete(@RequestBody WarehouseVO warehouseVO) {
-        try {
-            Set<Integer> idsToDelete = new HashSet<>();
-            warehouseService.collectIdsToDelete(warehouseVO, idsToDelete);
-            warehouseService.removeByIds(idsToDelete);
-            return R.ok("ok");
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
-        }
+        Set<Integer> idsToDelete = new HashSet<>();
+        warehouseService.collectIdsToDelete(warehouseVO, idsToDelete);
+        warehouseService.removeByIds(idsToDelete);
+        return R.ok("ok");
     }
 
     // 修改
@@ -63,12 +55,15 @@ public class WarehouseController {
     //查询全部
     @PostMapping("/findAll")
     public R<List<Warehouse>> findAll() {
-        try {
-            List<Warehouse> list = warehouseService.list();
-            return R.ok(list);
-        } catch (Exception e) {
-            throw new BizIllegalException("服务器内部错误");
-        }
+        List<Warehouse> list = warehouseService.list();
+        return R.ok(list);
+    }
+
+    //查找一个
+    @GetMapping("/findOne/{id}")
+    public R<Warehouse> findOne(@PathVariable Integer id) {
+        Warehouse warehouse = warehouseService.getById(id);
+        return R.ok(warehouse);
     }
 
     // 分页查询
