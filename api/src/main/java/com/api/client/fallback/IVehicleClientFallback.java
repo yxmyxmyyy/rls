@@ -31,6 +31,11 @@ public class IVehicleClientFallback implements FallbackFactory<IVehicleClient> {
             public boolean use(List<Long> idList) {
                 return false;
             }
+
+            @Override
+            public List<Vehicle> findMore(List<Long> ids) {
+                return Collections.emptyList();
+            }
         };
     }
 }

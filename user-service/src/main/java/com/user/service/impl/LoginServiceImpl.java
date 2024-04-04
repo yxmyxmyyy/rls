@@ -32,11 +32,11 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
             Map<String, Object> map = new HashMap<>();
             map.put("id", u.getId());
             map.put("username", u.getUsername());
-            map.put("role", u.getRole());
+            map.put("roles", u.getRoles());
             map.put("warehouseId", u.getWarehouseId());
             TokenData tokenData = JwtHelper.createToken("payload", map);
             tokenData.setWarehouseId(u.getWarehouseId());
-            tokenData.setRoles(u.getRole());
+            tokenData.setRoles(new ArrayList<>(List.of(u.getRoles().toString())));
             tokenData.setUsername(u.getUsername());
             return tokenData;
         }
@@ -51,7 +51,7 @@ public class LoginServiceImpl extends ServiceImpl<UserMapper, User> implements I
         String name = (String) map.get("name");
         user.setUsername(name);
         Integer role = (Integer) map.get("role");
-        user.setRole(role);
+        user.setRoles(role);
         return user;
     }
 

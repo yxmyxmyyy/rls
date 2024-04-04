@@ -1,5 +1,6 @@
 package com.item.mapper;
 
+import com.api.domain.dto.ItemStockDTO;
 import com.api.domain.po.Item;
 import com.api.domain.po.VehicleLoad;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -13,6 +14,9 @@ import java.util.Set;
 
 @Mapper
 public interface ItemMapper extends BaseMapper<Item> {
+
+    @Select("SELECT product_name, SUM(stock) AS stock FROM items GROUP BY product_name ORDER BY SUM(stock) DESC;")
+    List<ItemStockDTO> findAllProductStocks();
     // 批量检查库存
     @Select("<script>" +
             "SELECT product_id, stock FROM items WHERE warehouse_id = #{warehouseId} AND product_id IN " +

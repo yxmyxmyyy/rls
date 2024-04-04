@@ -9,6 +9,7 @@ import com.api.domain.dto.ItemDTO;
 import com.api.domain.dto.TransportDTO;
 import com.api.domain.po.*;
 import com.api.domain.vo.TransportVO;
+import com.api.domain.vo.WeekCountVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,6 +26,8 @@ import org.springframework.data.redis.core.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -44,8 +47,28 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
 
     private final RocketMQTemplate rocketMQTemplate;
 
+    private final TransportMapper transportMapper;
+
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    public WeekCountVO collectWeeklyOrderData() {
+        LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
+        WeekCountVO weekCountVO = new WeekCountVO();
+        List<Integer> inProgressData = new ArrayList<>();
+        List<Integer> endProgressData = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = startOfWeek.plusDays(i);
+            int newOrders = transportMapper.countNewOrdersByDate(date);
+            int finishedOrders = transportMapper.countFinishedOrdersByDate(date);
+
+            inProgressData.add(newOrders);
+            endProgressData.add(finishedOrders);
+        }
+        weekCountVO.setInProgressData(inProgressData);
+        weekCountVO.setEndProgressData(endProgressData);
+        return weekCountVO;
+    }
 
     @Async
     public void MqSend(Long id,TransportVO transportVO) {
@@ -97,7 +120,7 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         Transport ts = new Transport();
         ts.setTaskId(transportDTO.getId());
         ts.setDescription(transportVO.getDescription());
-        ts.setStatus("已取消");
+        ts.setStatus(transportVO.getDescription());
         updateById(ts);
         TransportLog tl = new TransportLog();
         tl.setTaskId(ts.getTaskId());

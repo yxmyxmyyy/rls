@@ -36,7 +36,7 @@ public class VehicleLogConsumer implements RocketMQListener<VehicleLog> {
 
     private void forwardMessageToMqtt(VehicleLog vehicleLog) {
         try {
-            List<Double> point = List.of(vehicleLog.getLng(), vehicleLog.getLat());
+            List<Double> point = List.of(vehicleLog.getLng(), vehicleLog.getLat(), vehicleLog.getTemp());
             Long taskId = vehicleLog.getTaskId();
             String publisherId = "mqtt_publisher_id";
             IMqttClient mqttClient = new MqttClient("tcp://127.0.0.1:1883", publisherId);

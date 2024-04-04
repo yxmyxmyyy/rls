@@ -3,6 +3,7 @@ package com.api.client.fallback;
 import com.api.client.IItemClient;
 import com.api.client.IVehicleClient;
 import com.api.domain.dto.ItemDTO;
+import com.api.domain.dto.ItemStockDTO;
 import com.api.domain.po.Vehicle;
 import com.api.domain.po.VehicleLoad;
 import com.common.domain.R;
@@ -29,6 +30,11 @@ public class IItemClientFallback implements FallbackFactory<IItemClient> {
             @Override
             public boolean insertOrUpdate(ItemDTO itemDTO) {
                 return false;
+            }
+
+            @Override
+            public List<ItemStockDTO> findAllProductStocks() {
+                return Collections.emptyList();
             }
         };
     }

@@ -1,9 +1,11 @@
 package com.vehicle.controller;
 
+import com.api.domain.po.Item;
 import com.api.domain.po.Vehicle;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.common.domain.R;
 import com.common.exception.BadRequestException;
 import com.common.exception.BizIllegalException;
 import com.vehicle.service.IVehicleService;
@@ -32,6 +34,13 @@ public class VehicleController {
     // 新增
     @PostMapping("/insert")
     public boolean insert(@RequestBody Vehicle vehicle) {
+        if (vehicle.getCapacity()<1000){
+            vehicle.setType("小货车");
+        }else if (vehicle.getCapacity()<2000){
+            vehicle.setType("中货车");
+        }else {
+            vehicle.setType("大货车");
+        }
         return VehicleService.saveOrUpdate(vehicle);
     }
 
@@ -45,6 +54,12 @@ public class VehicleController {
     @PutMapping("/update")
     public boolean update(@RequestBody List<Vehicle> vehicle) {
         return VehicleService.updateBatchById(vehicle);
+    }
+
+    //查找多个
+    @PostMapping("/findMore")
+    public List<Vehicle> findMore(@RequestBody List<Long> ids) {
+        return VehicleService.listByIds(ids);
     }
 
     // 查询全部空闲
@@ -63,11 +78,9 @@ public class VehicleController {
         }
         return vehicles;
     }
-    // 分页查询
-    @GetMapping("/find")
-    public IPage<Vehicle> find(Integer pageNum, Integer pageSize) {
-        IPage<Vehicle> ip = new Page<>(pageNum, pageSize);
-        return VehicleService.page(ip);
+    @PostMapping("/find")
+    public R<Page<Vehicle>> find(@RequestBody Vehicle vehicle, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+        return R.ok(VehicleService.find(vehicle,pageNum, pageSize));
     }
     
 }

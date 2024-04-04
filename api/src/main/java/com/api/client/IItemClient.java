@@ -4,6 +4,7 @@ import com.api.client.fallback.IItemClientFallback;
 import com.api.client.fallback.IVehicleClientFallback;
 import com.api.config.DefaultFeignConfig;
 import com.api.domain.dto.ItemDTO;
+import com.api.domain.dto.ItemStockDTO;
 import com.api.domain.po.Vehicle;
 import com.api.domain.po.VehicleLoad;
 import com.common.domain.R;
@@ -26,5 +27,8 @@ public interface IItemClient {
     //添加存在的库存，返回不存在的库存
     @PutMapping("/item/insertOrUpdate")
     boolean insertOrUpdate(@RequestBody ItemDTO itemDTO);
+
+    @GetMapping("/item/findAllProductStocks")
+    public List<ItemStockDTO> findAllProductStocks();
 
 }

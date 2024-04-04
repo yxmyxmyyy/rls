@@ -1,10 +1,13 @@
 package com.transport.service.impl;
 
 
+import com.api.client.IVehicleClient;
 import com.api.domain.dto.AllocationResultDTO;
+import com.api.domain.dto.VehicleProductInfoDTO;
 import com.api.domain.po.Vehicle;
 import com.api.domain.po.VehicleLoad;
 import com.api.domain.vo.TransportVO;
+import com.api.domain.vo.VehicleGroupVO;
 import com.api.domain.vo.VehicleTypeVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,14 +16,19 @@ import com.common.exception.BizIllegalException;
 import com.transport.mapper.VehicleLoadMapper;
 import com.transport.service.IVehicleLoadService;
 import io.seata.spring.annotation.GlobalTransactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class VehicleLoadServiceImpl extends ServiceImpl<VehicleLoadMapper, VehicleLoad> implements IVehicleLoadService {
+
+    private final IVehicleClient vehicleClient;
     @GlobalTransactional
     public AllocationResultDTO allocateCargo(List<Vehicle> vehicles, List<VehicleLoad> cargo) {
         // Initialize the map for vehicle counting by capacity
@@ -90,6 +98,40 @@ public class VehicleLoadServiceImpl extends ServiceImpl<VehicleLoadMapper, Vehic
         queryWrapper.eq("task_id", taskId);
         // 使用Service的lambdaQuery方法，传入构建的查询条件
         return list(queryWrapper);
+    }
+
+    public List<VehicleGroupVO> findByTaskId(@PathVariable Long taskId) {
+        List<VehicleLoad> vehicleLoads = getByTaskId(taskId);
+
+        Map<Long, VehicleGroupVO> vehicleGroupMap = new HashMap<>();
+
+        for (VehicleLoad load : vehicleLoads) {
+            VehicleGroupVO vehicleGroup = vehicleGroupMap.computeIfAbsent(load.getVehicleId(), VehicleGroupVO::new);
+
+            VehicleProductInfoDTO productInfo = new VehicleProductInfoDTO();
+            productInfo.setProductId(load.getProductId().toString());
+            productInfo.setProductName(load.getProductName());
+            productInfo.setWeight(load.getWeight());
+
+            vehicleGroup.addProductInfo(productInfo);
+        }
+
+        // Step 2: Fetch additional vehicle details
+        List<Long> vehicleIds = vehicleGroupMap.keySet().stream()
+                .distinct() // This is technically unnecessary for a Set but shown here for completeness
+                .collect(Collectors.toList());
+        List<Vehicle> vehicles = vehicleClient.findMore(vehicleIds); // Replace vehicleClient.findMore with your actual method call
+        // Step 3: Enrich VehicleGroupVO with vehicle details
+        for (Vehicle vehicle : vehicles) {
+            VehicleGroupVO vehicleGroup = vehicleGroupMap.get(vehicle.getVehicleId());
+            if (vehicleGroup != null) {
+                vehicleGroup.setLicensePlate(vehicle.getLicensePlate());
+                vehicleGroup.setType(vehicle.getType());
+                vehicleGroup.setCapacity(vehicle.getCapacity());
+            }
+        }
+
+        return new ArrayList<>(vehicleGroupMap.values());
     }
 
 }

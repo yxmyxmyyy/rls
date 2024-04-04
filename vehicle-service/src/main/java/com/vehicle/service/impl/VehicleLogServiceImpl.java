@@ -31,7 +31,7 @@ public class VehicleLogServiceImpl extends ServiceImpl<VehicleLogMapper, Vehicle
         List<VehicleLog> logs = list(qw);
         List<List<Double>> path = new ArrayList<>();
         for (VehicleLog log : logs) {
-            List<Double> point = Arrays.asList(log.getLng(), log.getLat());
+            List<Double> point = Arrays.asList(log.getLng(), log.getLat(), log.getTemp());
             path.add(point);
         }
         return path;

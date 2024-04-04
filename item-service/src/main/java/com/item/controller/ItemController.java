@@ -1,6 +1,7 @@
 package com.item.controller;
 
 import com.api.domain.dto.ItemDTO;
+import com.api.domain.dto.ItemStockDTO;
 import com.api.domain.po.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.common.domain.R;
 import com.common.exception.BadRequestException;
 import com.common.exception.BizIllegalException;
+import com.item.mapper.ItemMapper;
 import com.item.service.IItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,13 @@ import java.util.List;
 public class ItemController {
 
     private final IItemService itemService;
+
+    private final ItemMapper itemMapper;
+
+    @GetMapping("/findAllProductStocks")
+    public List<ItemStockDTO> findAllProductStocks() {
+        return itemMapper.findAllProductStocks();
+    }
 
     //分页查询
     @PostMapping("/find")

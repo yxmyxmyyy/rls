@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TokenData {
     private String username;
-    private Integer roles;
+    private List<String> roles;
     private Integer warehouseId;
     private String accessToken;
     private String refreshToken;

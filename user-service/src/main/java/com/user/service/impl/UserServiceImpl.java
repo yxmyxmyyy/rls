@@ -57,7 +57,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (userFindDTO.getPhone() != null) {
             qw.eq("phone", userFindDTO.getPhone());
         }
-        qw.select("id", "username", "status", "warehouse_id", "phone", "role", "sex" ,"create_time");
+        qw.select("id", "username", "status", "warehouse_id", "phone", "roles", "sex" ,"create_time");
         // 执行分页和条件查询
         Page<User> result = page(page, qw);
 

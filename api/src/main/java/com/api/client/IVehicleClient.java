@@ -4,9 +4,7 @@ import com.api.client.fallback.IVehicleClientFallback;
 import com.api.config.DefaultFeignConfig;
 import com.api.domain.po.Vehicle;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +21,8 @@ public interface IVehicleClient {
 
     @PutMapping("/Vehicle/use")
     boolean use(@RequestBody List<Long> idList);
+
+    @PostMapping("/Vehicle/findMore")
+    List<Vehicle> findMore(@RequestBody List<Long> ids);
 
 }
