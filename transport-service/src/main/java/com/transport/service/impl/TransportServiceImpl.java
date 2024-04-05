@@ -170,7 +170,8 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
     }
 
     public Page<Transport> find(Transport Transport, Integer pageNum, Integer pageSize) {
-        String key = "transport:find:" + Transport.hashCode() + ":" + pageNum + ":" + pageSize;
+        String key = "transport:find:" + Transport.getTaskId() +Transport.getOriginWarehouseId()
+                + Transport.getDestinationWarehouseId() + Transport.getStatus() + ":" + pageNum + ":" + pageSize;
 
         // 尝试从缓存获取数据
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();

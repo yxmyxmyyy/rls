@@ -31,7 +31,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     public Page<User> find( UserFindDTO userFindDTO, Integer pageNum, Integer pageSize) {
-        String key = "user:find:" + userFindDTO.hashCode() + ":" + pageNum + ":" + pageSize;
+        String key = "user:find:" + userFindDTO.getUsername() + userFindDTO.getWarehouseId()
+                + userFindDTO.getStatus() + userFindDTO.getPhone() + ":" + pageNum + ":" + pageSize;
 
         // 尝试从缓存获取数据
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();

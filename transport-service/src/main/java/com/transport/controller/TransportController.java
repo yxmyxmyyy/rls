@@ -11,6 +11,7 @@ import com.api.domain.vo.TransportVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.common.domain.R;
 import com.common.exception.BadRequestException;
+import com.common.util.UserContext;
 import com.transport.service.ITransportLogService;
 import com.transport.service.ITransportService;
 import io.seata.spring.annotation.GlobalTransactional;
@@ -38,7 +39,7 @@ public class TransportController {
     //新增订单
     @PostMapping("/new")
     public R<String> insert1(@RequestBody TransportVO transportVO) {
-        Integer warehouseId = 20;
+        Integer warehouseId = UserContext.getUser().getWarehouseId();
         transportVO.setOriginWarehouseId(warehouseId);
         boolean item = itemClient.deductStock(transportVO.getOriginWarehouseId(),transportVO.getVehicleLoad());
         if (!item){
@@ -78,7 +79,7 @@ public class TransportController {
     //分页查询入库
     @PostMapping("/findin")
     public R<Page<Transport>> findin(@RequestBody Transport Transport, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        Integer warehouseId = 20;
+        Integer warehouseId = UserContext.getUser().getWarehouseId();
         Transport.setDestinationWarehouseId(warehouseId);
         return R.ok(TransportService.find(Transport,pageNum, pageSize));
     }
@@ -86,7 +87,7 @@ public class TransportController {
     //分页查询出库
     @PostMapping("/findout")
     public R<Page<Transport>> findout(@RequestBody Transport Transport, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        Integer warehouseId = 20;
+        Integer warehouseId = UserContext.getUser().getWarehouseId();
         Transport.setOriginWarehouseId(warehouseId);
         return R.ok(TransportService.find(Transport,pageNum, pageSize));
     }

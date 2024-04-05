@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.common.domain.R;
 import com.common.exception.BadRequestException;
 import com.common.exception.BizIllegalException;
+import com.common.util.UserContext;
 import com.item.mapper.ItemMapper;
 import com.item.service.IItemService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ItemController {
     //分页查询
     @PostMapping("/find")
     public R<Page<Item>> find(@RequestBody Item Item, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        Integer warehouseId = 20;
+        Integer warehouseId = UserContext.getUser().getWarehouseId();
         Item.setWarehouseId(warehouseId);
         return R.ok(itemService.find(Item,pageNum, pageSize));
     }
@@ -43,7 +44,7 @@ public class ItemController {
     //入库
     @PostMapping("/saveOrUpdate")
     public R<String> saveOrUpdate(@RequestBody List<VehicleLoad> vehicleLoad) {
-        Integer warehouseId = 20;
+        Integer warehouseId = UserContext.getUser().getWarehouseId();
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setWarehouseId(warehouseId);
         itemDTO.setVehicleLoad(vehicleLoad);
