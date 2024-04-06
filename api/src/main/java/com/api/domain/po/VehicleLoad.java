@@ -15,7 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("vehicle_load")
-public class VehicleLoad implements Serializable {
+public class VehicleLoad implements Serializable, Cloneable {
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long loadId;
@@ -27,6 +27,21 @@ public class VehicleLoad implements Serializable {
     private Long productId;
     private String productName;
     private Double weight;
+
+    public VehicleLoad deepCopy() {
+        return new VehicleLoad(this.loadId, this.vehicleId, this.taskId, this.productId, this.productName, this.weight);
+    }
+
+    @Override
+    public VehicleLoad clone() {
+        try {
+            return (VehicleLoad) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can never happen
+        }
+    }
+
+
 }
 
 

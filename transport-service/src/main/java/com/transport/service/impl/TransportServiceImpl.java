@@ -21,6 +21,8 @@ import com.transport.service.IVehicleLoadService;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.scheduling.annotation.Async;
@@ -51,6 +53,9 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     public WeekCountVO collectWeeklyOrderData() {
         LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
@@ -92,21 +97,38 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
     }
     @GlobalTransactional
     public void processNewTransport(TransportDTO transportDTO) {
-        List<Vehicle> vehicles = vehicleClient.findAll();
-        if (vehicles.isEmpty()){
-            throw new BadRequestException("没有空余车辆");
-        }
-        AllocationResultDTO allocationResult = vehicleLoadService.allocateCargo(vehicles, transportDTO.getTransportVO().getVehicleLoad());
+        RLock lock = redissonClient.getLock("myLock");
+        try {
+            // 尝试获取锁，最多等待3秒，锁定后最多保持10秒自动解锁
+            boolean isLocked = lock.tryLock(10, 30, TimeUnit.SECONDS);
+            if (isLocked) {
+                List<Vehicle> vehicles = vehicleClient.findAll();
+                if (vehicles.isEmpty()){
+                    throw new BadRequestException("没有空余车辆");
+                }
+                List<VehicleLoad> originalList = transportDTO.getTransportVO().getVehicleLoad();
+                List<VehicleLoad> copyList = new ArrayList<>();
 
-        //尝试更新车辆状态
-        List<Long> vehicleIds = allocationResult.getVehicles().stream().map(Vehicle::getVehicleId).toList();
-        //分配车辆
-        if(!vehicleClient.use(vehicleIds)){
-            throw new BadRequestException("分配车辆失败");
+                for (VehicleLoad item : originalList) {
+                    copyList.add(item.clone());
+                }
+                AllocationResultDTO allocationResult = vehicleLoadService.allocateCargo(vehicles, copyList);
+
+                //尝试更新车辆状态
+                List<Long> vehicleIds = allocationResult.getVehicles().stream().map(Vehicle::getVehicleId).toList();
+                //分配车辆
+                if(!vehicleClient.use(vehicleIds)){
+                    throw new BadRequestException("分配车辆失败");
+                }
+                allocationResult.getVehicleLoads().forEach(vehicleLoad -> vehicleLoad.setTaskId(transportDTO.getId()));
+                vehicleLoadService.saveBatch(allocationResult.getVehicleLoads());
+                clearPageFindCache();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
         }
-        allocationResult.getVehicleLoads().forEach(vehicleLoad -> vehicleLoad.setTaskId(transportDTO.getId()));
-        vehicleLoadService.saveBatch(allocationResult.getVehicleLoads());
-        clearPageFindCache();
     }
 
     //失败订单处理

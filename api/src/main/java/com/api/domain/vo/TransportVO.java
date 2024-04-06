@@ -6,17 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransportVO implements Serializable {
+public class TransportVO implements Serializable{
     private String description;
     private Integer originWarehouseId;
     private Integer destinationWarehouseId;
     private String status;
-    private List<VehicleLoad> VehicleLoad;
+    private List<VehicleLoad> vehicleLoad;
 }
 
 

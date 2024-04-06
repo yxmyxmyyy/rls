@@ -20,6 +20,12 @@ import java.util.Date;
 public class TransportDTO implements Serializable {
     private TransportVO transportVO;
     private Long id;
+
 }
+
+
+
+
+
 
 
