@@ -206,7 +206,6 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         // 创建Page对象，其中current是当前页数，size是每页显示记录的数量
         Page<Transport> page = new Page<>(pageNum, pageSize);
         QueryWrapper<Transport> qw = new QueryWrapper<>();
-        // 根据条件添加查询条件，这里省略了空值检查，实际使用时应该加上
         if (Transport.getTaskId() != null){
             qw.eq("task_id", Transport.getTaskId());
         }

@@ -21,20 +21,15 @@ public class MqttBrokerServer {
         configProps.put("websocket_port", "1884");
         // 允许WebSocket
         configProps.put("websocket_enabled", "true");
-        // 更多配置可以根据需要设置
-
         IConfig config = new MemoryConfig(configProps);
-
         Server mqttBroker = new Server();
         mqttBroker.startServer(config);
-
         // 添加钩子，以确保在应用关闭时停止服务器
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Stopping MQTT broker...");
             mqttBroker.stopServer();
             System.out.println("MQTT broker stopped");
         }));
-
         System.out.println("MQTT broker started");
     }
 }

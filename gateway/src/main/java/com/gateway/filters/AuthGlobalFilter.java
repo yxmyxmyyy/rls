@@ -45,7 +45,6 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             token = token.substring(7);
         }
         // 4.校验并解析token
-        Long userId = null;
         Map<String, Object> map;
         try {
             map = JwtHelper.decode(token, "payload").asMap();
@@ -56,7 +55,6 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             return response.setComplete();
         }
         Long id = (Long) map.get("id");
-        Integer roles = (Integer) map.get("roles");
         String username = (String) map.get("username");
         Integer warehouseId = (Integer) map.get("warehouseId");
         // 5.如果有效，传递用户信息

@@ -35,12 +35,12 @@ public class TransportConsumer implements RocketMQListener<TransportDTO>, Rocket
         consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
             MessageExt msg = msgs.get(0); // 假设一次只处理一个消息
             byte[] body = msg.getBody();
-            TransportDTO transportDTO = JSON.parseObject(body, TransportDTO.class);
+            TransportDTO transportDTO = JSON.parseObject(body, TransportDTO.class);// 反序列化
             try {
                 transportService.processNewTransport(transportDTO);
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             } catch (Exception e) {
-                transportDTO.getTransportVO().setDescription(e.getMessage());
+                transportDTO.getTransportVO().setDescription(e.getMessage());// 记录失败原因
                 int reconsumeTimes = msg.getReconsumeTimes();
                 if (reconsumeTimes >= 2) { // 0是第一次消费，1和2是接下来的两次重试
                     // 达到最大重试次数后的特定逻辑

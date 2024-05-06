@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.common.domain.R;
 import com.common.exception.BadRequestException;
 import com.common.exception.BizIllegalException;
+import com.common.util.UserContext;
 import com.user.service.IWarehouseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContextException;
@@ -63,6 +64,14 @@ public class WarehouseController {
     @GetMapping("/findOne/{id}")
     public R<Warehouse> findOne(@PathVariable Integer id) {
         Warehouse warehouse = warehouseService.getById(id);
+        return R.ok(warehouse);
+    }
+
+    //根据token查找
+    @GetMapping("/findByToken")
+    public R<Warehouse> findByToken() {
+        Integer warehouseId = UserContext.getUser().getWarehouseId();
+        Warehouse warehouse = warehouseService.getById(warehouseId);
         return R.ok(warehouse);
     }
 
