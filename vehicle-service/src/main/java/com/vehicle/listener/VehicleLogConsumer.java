@@ -29,6 +29,7 @@ public class VehicleLogConsumer implements RocketMQListener<VehicleLog> {
     @Override
     public void onMessage(VehicleLog vehicleLog) {
 
+
         forwardMessageToMqtt(vehicleLog);
 
 

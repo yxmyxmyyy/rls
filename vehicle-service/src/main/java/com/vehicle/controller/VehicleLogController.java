@@ -28,6 +28,7 @@ public class VehicleLogController {
 
     @PostMapping("/addVehicleLog")
     public R<Void> addVehicleLog(@RequestBody VehicleLog vehicleLog) {
+        vehicleLogService.save(vehicleLog);
         rocketMQTemplate.convertAndSend("VehicleLog-topic", vehicleLog);
         return R.ok();
     }
